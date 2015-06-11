@@ -18,10 +18,7 @@ def index():
     ).read()
 
     opener = urllib2.build_opener()
-    opener.addheaders = [
-        ('X-Forwarded-For', request.headers.get('X-Forwarded-For')),
-        ('Host', request.headers.get('Host', '')),
-    ]
+    opener.addheaders = request.headers.items()
 
     resp = opener.open(playlist).read().decode('utf-8').split('#')
     out = {}
