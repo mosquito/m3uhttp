@@ -6,7 +6,7 @@ monkey.patch_all()
 import os
 import urllib2
 import json
-from bottle import route, run, response, template
+from bottle import route, run, response, template, request
 
 playlist = os.getenv('PLAYLIST', 'http://127.0.0.1/torrent-telik')
 
@@ -17,7 +17,13 @@ def index():
         'rb'
     ).read()
 
-    resp = urllib2.urlopen(playlist).read().decode('utf-8').split('#')
+    opener = urllib2.build_opener()
+    opener.addheaders = [
+        ('X-Forwarded-For', request.headers.get('X-Forwarded-For')),
+        ('Host', request.headers.get('Host', '')),
+    ]
+
+    resp = opener.open(playlist).read().decode('utf-8').split('#')
     out = {}
     for line in resp:
         if '\n' in line and 'EXTINF' in line:
