@@ -17,10 +17,8 @@ def index():
         'rb'
     ).read()
 
-    opener = urllib2.build_opener()
-    opener.addheaders = request.headers.items()
-
-    resp = opener.open(playlist).read().decode('utf-8').split('#')
+    req = urllib2.Request(playlist, None, dict(request.headers))
+    resp = urllib2.urlopen(req).read().decode('utf-8').split('#')
     out = {}
     for line in resp:
         if '\n' in line and 'EXTINF' in line:
